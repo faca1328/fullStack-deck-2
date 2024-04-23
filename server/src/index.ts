@@ -1,23 +1,25 @@
 import express from "express";
 import 'dotenv/config'
 import mongoose from 'mongoose';
+import cors from 'cors';
 import Deck from './schema/Decks'
 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json());
 
 
 
-app.get('/decks',  (req, res) => {
-    res.send("<h1> Aca estarian mis 'Decks' </h1>");
+app.get('/decks',  async (req, res) => {
+    res.send(await Deck.find());
 })
 
 app.post('/decks', async (req, res) => {
     const newDeck = new Deck({
-        title: 'esto es un nuevo deck',
+        title: req.body.title,
     });
     await newDeck.save();
     res.send(newDeck);
