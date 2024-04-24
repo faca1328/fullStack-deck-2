@@ -39,9 +39,7 @@ export function Deck() {
       if (!response.ok) {
         throw new Error("Failed to add new card");
       }
-
-      const data = await response.json();
-      setCards([...cards, data.text]);
+      setCards([...cards, newCard]);
     } catch (error) {
       console.error("Error adding new card:", error);
     }
