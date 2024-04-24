@@ -9,6 +9,7 @@ export function Deck() {
   const [cards, setCards] = useState<string[]>([]);
   const { deckId } = useParams();
 
+  
   useEffect(() => {
     async function fetchDeck() {
       if (!deckId) return;
@@ -25,8 +26,25 @@ export function Deck() {
     fetchDeck();
   }, [deckId]);
 
-  const addNewCard = (newCard: string) => {
-    setCards([...cards, newCard]);
+
+
+  const addNewCard = async (newCard: string) => {
+    try {
+      const response = await fetch(`http://localhost:3000/decks/${deckId}/cards`, {
+        method: "POST",
+        body: JSON.stringify({ text: newCard }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add new card");
+      }
+
+      const data = await response.json();
+      setCards([...cards, data.text]);
+    } catch (error) {
+      console.error("Error adding new card:", error);
+    }
   };
 
   const removeCard = async (cardId: string) => {
@@ -40,13 +58,13 @@ export function Deck() {
     }
   };
 
-  if(!cards) return <h1> No Card Found</h1>
+
 
   return (
     <>
       <h1>{deck?.title}</h1>
-      <Cards cards={cards} deckId={deckId!} removeCard={removeCard} />
-      <CardsForm addNewCard={addNewCard} deckId={deckId!} />
+      <Cards cards={cards} removeCard={removeCard} />
+      <CardsForm addNewCard={addNewCard} />
     </>
   );
 }

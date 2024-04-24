@@ -1,43 +1,35 @@
 import React, { useState } from "react";
 
 interface Props {
-    deckId: string;
-    addNewCard: (newCard: string) => void;
+  addNewCard: (newCard: string) => void;
 }
 
+export const CardsForm = ({ addNewCard }: Props) => {
+  const [text, setText] = useState("");
 
-export const CardsForm = ({ addNewCard, deckId }: Props) => {
-    const [text, setText] = useState("");
+  const handleCreateCard = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const handleCreateCard = async (e: React.FormEvent) => {
-        e.preventDefault();
+    if (!text.trim()) {
+      return; // Evitar agregar cartas vacías
+    }
 
-        await fetch(`http://localhost:3000/decks/${deckId}/cards`, {
-            method: "POST",
-            body: JSON.stringify({ text }),
-            headers: { "Content-Type": "application/json" },
-        }).then((response) => response.json())
-            .then((data) => {
-                addNewCard(data.text); 
-                setText("");
-            })
-            .catch((error) => console.log(error));
-    };
+    addNewCard(text.trim());
+    setText("");
+  };
 
-    return (
-        <form onSubmit={handleCreateCard}>
-            <label htmlFor="card-text"> Card Text : </label>
-            <input
-                id="card-text"
-                type="text"
-                value={text}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setText(e.target.value);
-                }}
-            />
-            <button> Create Card </button>
-            <hr />
-            <h1>{text}</h1>
-        </form>
-    );
+  return (
+    <form onSubmit={handleCreateCard}>
+      <label htmlFor="card-text"> Card Text : </label>
+      <input
+        id="card-text"
+        type="text"
+        value={text}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setText(e.target.value);
+        }}
+      />
+      <button> Create Card </button>
+    </form>
+  );
 };
