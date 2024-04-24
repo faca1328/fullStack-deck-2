@@ -11,18 +11,15 @@ export const MainForm = ({ addNewDeck }: Props) => {
 
   const handleCreateDeck = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:3000/decks", {
-        method: "POST",
-        body: JSON.stringify({ title }),
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await response.json();
-      addNewDeck(data); // Agregar el nuevo mazo al estado sin evitando el loop del useEffect
-      setTitle("");
-    } catch (error) {
-      console.error("Error creating deck:", error);
-    }
+    
+    await fetch("http://localhost:3000/decks", {
+      method: "POST",
+      body: JSON.stringify({ title }),
+      headers: { "Content-Type": "application/json" },
+    }).then(response => response.json())
+      .then(data => addNewDeck(data)) // Agregar el nuevo mazo al estado sin evitando el loop del useEffect
+      .then(() => setTitle(""))
+      .catch(error => console.log(error))
   };
 
   return (

@@ -1,5 +1,6 @@
 export interface DECKS {
     _id: string,
     title: string,
-    __v: number
+    __v: number,
+    cards?: string[],
 }

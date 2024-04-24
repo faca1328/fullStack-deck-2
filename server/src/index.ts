@@ -2,8 +2,12 @@ import express from "express";
 import 'dotenv/config'
 import mongoose from 'mongoose';
 import cors from 'cors';
-import Deck from './schema/Decks'
-
+import { GetAllDecks } from "./controllers/GetAllDecksController";
+import { PostNewDeck } from "./controllers/PostNewDeckController";
+import { DeleteById } from "./controllers/DeleteByIdController";
+import { PostNewCard } from "./controllers/PostNewCardController";
+import { GetDeck } from "./controllers/GetDeckController";
+import { DeleteCardById } from "./controllers/DeleteCardByIdController";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,29 +17,22 @@ app.use(express.json());
 
 
 
-app.get('/decks',  async (req, res) => {
-    res.send(await Deck.find());
-})
+app.get('/decks',  GetAllDecks);
 
-app.post('/decks', async (req, res) => {
-    const newDeck = new Deck({
-        title: req.body.title,
-    });
-    await newDeck.save();
-    res.send(newDeck);
-})
+app.post('/decks', PostNewDeck);
 
-app.delete('/decks/:deckId',  async (req, res) => {
-    const deck = await Deck.findById(req.params.deckId);
-    const deleteDeck = await Deck.findByIdAndDelete(deck);
-    res.send(deleteDeck);
-})
+app.delete('/decks/:deckId',  DeleteById);
+
+app.get('/decks/:deckId', GetDeck);
+app.post('/decks/:deckId/cards', PostNewCard);
+app.delete('/decks/:deckId/cards/:cardId', DeleteCardById);
+
 
 
 
 
 //esperamos a que la promesa de conectarse a la db se haga para ejecutar el backend
-mongoose.connect(`mongodb+srv://facundoivanmartinez:${process.env.DB_PASSWORD}@fullstac-deck-2.98psjhq.mongodb.net/?retryWrites=true&w=majority&appName=fullStac-deck-2`)
+mongoose.connect(`${process.env.DB_MONGO_URL_1}${process.env.DB_PASSWORD}${process.env.DB_MONGO_URL_2}`)
     .then(() => {
         app.listen(PORT, () => { console.log(`listening at ${PORT}`) });
     });
