@@ -25,7 +25,11 @@ app.post('/decks', async (req, res) => {
     res.send(newDeck);
 })
 
-
+app.delete('/decks/:deckId',  async (req, res) => {
+    const deck = await Deck.findById(req.params.deckId);
+    const deleteDeck = await Deck.findByIdAndDelete(deck);
+    res.send(deleteDeck);
+})
 
 
 

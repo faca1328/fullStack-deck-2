@@ -1,24 +1,29 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
+import { DECKS } from "../types";
+
+interface Props {
+  addNewDeck: (newDeck: DECKS) => void;
+}
 
 
+export const MainForm = ({ addNewDeck }: Props) => {
+  const [title, setTitle] = useState("");
 
-export const MainForm = () => {
-
-  const [title, setTitle] = useState('');
-
-  function handleCreateDeck(e: React.FormEvent) {
+  const handleCreateDeck = async (e: React.FormEvent) => {
     e.preventDefault();
-    fetch("http://localhost:3000/decks", {
-      method: "POST",
-      body: JSON.stringify(
-        { title }
-      ),
-      //Aca le tenemos que decir que tipo de informacion le estamos pasando
-      headers: { "Content-Type": "application/json" }
-    }).then(() => setTitle(""))
-      .catch((err) => console.log(err))
+    try {
+      const response = await fetch("http://localhost:3000/decks", {
+        method: "POST",
+        body: JSON.stringify({ title }),
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await response.json();
+      addNewDeck(data); // Agregar el nuevo mazo al estado sin evitando el loop del useEffect
+      setTitle("");
+    } catch (error) {
+      console.error("Error creating deck:", error);
+    }
   };
-
 
   return (
     <form onSubmit={handleCreateDeck}>
@@ -28,12 +33,12 @@ export const MainForm = () => {
         type="text"
         value={title}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          setTitle(e.target.value)
+          setTitle(e.target.value);
         }}
       />
       <button> Create Deck </button>
       <hr />
       <h1>{title}</h1>
     </form>
-  )
-}
+  );
+};
